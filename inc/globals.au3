@@ -1,5 +1,5 @@
 ; Global Variables
-Global $MCBEPlay = "MCBEPlay v3.5"
+Global $MCBEPlay = "MCBEPlay v3.5.1-local"
 Global $options_file = @ScriptDir & "\options.txt"	; Define Name of Options File
 
 ; Icon File

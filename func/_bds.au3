@@ -252,11 +252,14 @@ EndFunc
 
 Func _BDSCheckError($data)
    Local $function_name = "Check Error"
-   Local $keyword = "ERROR"
-   Local $keylen = StringLen($keyword)
-   Local $pos
-   $pos = StringInStr($data, $keyword, 2)
-   If $pos > 1 Then
+
+   ; BDS 1.26 prints errorMessage=(null) on a successful profiler load (INFO).
+   ; Do not treat the substring "error" anywhere in a line as fatal.
+   If StringInStr($data, "errorMessage=", 2) > 0 Then Return
+   If StringInStr($data, " INFO]", 2) > 0 Then Return
+
+   ; Fatal only when the BDS log level is ERROR.
+   If StringInStr($data, "] ERROR]", 2) > 0 Or StringInStr($data, " ERROR]", 2) > 0 Then
 	  _log("Error Found in BDS Output: [" & $data & "]", $function_name, True)
 	  _BDSErrorFile("ERROR")
 	  _BDSExit()
@@ -270,15 +273,17 @@ Func _BDSCheckCrash($data)
    ; Now checking output from GUI for crash logs
 
    Local $function_name = "Check Crash"
-   ;_log("Crash Check", $function_name, False)
-   ; Crashreporter comes after start of crash Log
-   ; First line is [20191113 19:34:36 INFO] Package: .....
-   ;Local $keyword = "CrashReporter"
-   Local $keyword = $server_dir
-   Local $keylen = StringLen($keyword)
-   Local $pos
-   $pos = StringInStr($data, $keyword, 2)
-   If $pos > 0 Then
+   ; cmd /K leaves a prompt like C:\MinecraftServer> after a clean quit.
+   ; Do not treat $server_dir (or that prompt) as a crash.
+   Local $trimmed = StringStripWS($data, 3)
+   If StringRight($trimmed, 1) = ">" Then Return
+   If StringInStr($data, " INFO]", 2) > 0 Then Return
+
+   Local $isCrash = False
+   If StringInStr($data, "CrashReporter", 2) > 0 Then $isCrash = True
+   If StringInStr($data, "EXCEPTION", 2) > 0 Then $isCrash = True
+
+   If $isCrash Then
 	  ; CrashReport Found
 	  _BDSBusy(True)
 	  _BDSErrorFile("CRASH")
