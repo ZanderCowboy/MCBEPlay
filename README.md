@@ -2,14 +2,15 @@
 
 Server GUI and management for Minecraft Bedrock Dedicated Server on Windows.
 
-This is a **local fork** of [foxynotail/MCBEPlay](https://github.com/foxynotail/MCBEPlay) (v3.5, GPL-3.0), not an official release. Credit: [FoxyNoTail](https://foxynotail.com). Version: **3.5.1-local**.
+This is a **local fork** of [foxynotail/MCBEPlay](https://github.com/foxynotail/MCBEPlay) (v3.5, GPL-3.0), not an official release. Credit: [FoxyNoTail](https://foxynotail.com). Version: **3.5.2-local**.
 
 Stock 3.5 is incompatible with Bedrock Dedicated Server 1.26+:
 
 - BDS logs `Profiler config ('bootstrap.json') load result: success=1, errorMessage=(null)` on a successful INFO load. Stock 3.5 matches the substring `ERROR` and kills the process.
 - After a clean quit, `cmd /K` leaves a prompt such as `C:\MinecraftServer>`. Stock 3.5 treats any line containing `server_dir` as a crash and loops restarts.
+- A trailing newline in `command.txt` plus `_BDSStdIn($command & @LF)` submits a blank second command. BDS logs that as `Unknown command: .` at ERROR level; 3.5.1-local treated any ERROR line as fatal and killed the GUI.
 
-This fork only treats a BDS log level of `ERROR` as fatal, and only treats `CrashReporter` / `EXCEPTION` (non-INFO) as a crash.
+This fork only treats a BDS log level of `ERROR` as fatal (and ignores `Unknown command:`), trims `command.txt` before stdin, and only treats `CrashReporter` / `EXCEPTION` (non-INFO) as a crash.
 
 It is not a signed public app. Windows may still warn if the `.exe` is copied from the internet. Building locally is the trust model.
 

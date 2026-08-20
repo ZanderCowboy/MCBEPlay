@@ -95,7 +95,9 @@ Func _BDSProcessInput()
    Local $function_name = "Process Input"
    If FileExists($command_file) Then
 	  _log("Process Input Function Started", $function_name, False, False)
-	  Local $command = FileRead($command_file)
+	  ; Strip CR/LF so PowerShell Set-Content (or a second @LF below) cannot
+	  ; submit a blank second command: BDS logs that as "Unknown command: ."
+	  Local $command = StringStripWS(FileRead($command_file), 3)
 	  FileDelete($command_file)
 	  If StringLen($command)>0 Then
 		 _BDSBusy(True)
@@ -257,6 +259,8 @@ Func _BDSCheckError($data)
    ; Do not treat the substring "error" anywhere in a line as fatal.
    If StringInStr($data, "errorMessage=", 2) > 0 Then Return
    If StringInStr($data, " INFO]", 2) > 0 Then Return
+   ; Empty/unknown console lines are ERROR-level but not a dead server.
+   If StringInStr($data, "Unknown command:", 2) > 0 Then Return
 
    ; Fatal only when the BDS log level is ERROR.
    If StringInStr($data, "] ERROR]", 2) > 0 Or StringInStr($data, " ERROR]", 2) > 0 Then
