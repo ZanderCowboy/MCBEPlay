@@ -11,14 +11,20 @@ if (-not $aut2exe) {
     Write-Error "Aut2Exe not found. Install AutoIt from https://www.autoitscript.com/site/autoit/downloads/"
 }
 
+$iconFile = Join-Path $PSScriptRoot 'icon.ico'
+if (-not (Test-Path -LiteralPath $iconFile)) {
+    Write-Error "icon.ico not found in $PSScriptRoot"
+}
+
 function Invoke-Aut2Exe {
     param(
         [Parameter(Mandatory = $true)][string]$InFile,
         [Parameter(Mandatory = $true)][string]$OutFile
     )
-    Write-Host "Compiling $InFile -> $OutFile"
+    Write-Host "Compiling $InFile -> $OutFile (icon.ico)"
     # Aut2Exe often leaves $LASTEXITCODE empty when invoked with &; wait on the process instead.
-    $p = Start-Process -FilePath $aut2exe -ArgumentList @('/in', $InFile, '/out', $OutFile, '/nopack') -Wait -PassThru -NoNewWindow
+    # #AutoIt3Wrapper_Icon is SciTE-only; raw Aut2Exe needs /icon.
+    $p = Start-Process -FilePath $aut2exe -ArgumentList @('/in', $InFile, '/out', $OutFile, '/icon', $iconFile, '/nopack') -Wait -PassThru -NoNewWindow
     if ($p.ExitCode -ne 0) {
         throw "Aut2Exe failed for $InFile (exit $($p.ExitCode))"
     }

@@ -166,8 +166,18 @@ Func _autoRestart()
 
    GUICtrlSetData($restart_label, "Restarting in " & $iHour & "h " & $iMin & "m " & $iSec & "s")
 
-   ; If restart less than 5 minutes away then tell server
-   If $seconds_to_restart = 300 AND $seconds_to_restart >= 290 Then
+   ; 10-second windows so a skipped 1-second tick cannot miss a warning
+   If $seconds_to_restart <= 600 AND $seconds_to_restart >= 590 Then
+
+	  If $chat_triggered = False Then
+		 _log("Chat: Server is restarting in 10 minutes", $function_name, False, True)
+		 _serverSendCommand("say Server is restarting in 10 minutes")
+		 Global $chat_triggered = True
+		 Global $chat_timer = TimerInit()
+	  EndIf
+
+   EndIf
+   If $seconds_to_restart <= 300 AND $seconds_to_restart >= 290 Then
 
 	  If $chat_triggered = False Then
 		 _log("Chat: Server is restarting in 5 minutes", $function_name, False, True)
@@ -177,9 +187,7 @@ Func _autoRestart()
 	  EndIf
 
    EndIf
-   ; If restart less than 1 minute away then tell server
    If $seconds_to_restart <= 60 AND $seconds_to_restart >= 50 Then
-
 
 	  If $chat_triggered = False Then
 		 _log("Chat: Server is restarting in 1 minute", $function_name, False, True)
@@ -189,7 +197,6 @@ Func _autoRestart()
 	  EndIf
 
    EndIf
-   ; If restart less than 5 seconds away then tell server
    If $seconds_to_restart <= 10 AND $seconds_to_restart >= 6 Then
 
 	  If $chat_triggered = False Then

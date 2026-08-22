@@ -2,7 +2,7 @@
 
 Server GUI and management for Minecraft Bedrock Dedicated Server on Windows.
 
-This is a **local fork** of [foxynotail/MCBEPlay](https://github.com/foxynotail/MCBEPlay) (v3.5, GPL-3.0), not an official release. Credit: [FoxyNoTail](https://foxynotail.com). Version: **3.5.2-local**.
+This is a **local fork** of [foxynotail/MCBEPlay](https://github.com/foxynotail/MCBEPlay) (v3.5, GPL-3.0), not an official release. Credit: [FoxyNoTail](https://foxynotail.com). Version: **3.5.3-local**.
 
 Stock 3.5 is incompatible with Bedrock Dedicated Server 1.26+:
 
@@ -11,6 +11,8 @@ Stock 3.5 is incompatible with Bedrock Dedicated Server 1.26+:
 - A trailing newline in `command.txt` plus `_BDSStdIn($command & @LF)` submits a blank second command. BDS logs that as `Unknown command: .` at ERROR level; 3.5.1-local treated any ERROR line as fatal and killed the GUI.
 
 This fork only treats a BDS log level of `ERROR` as fatal (and ignores `Unknown command:`), trims `command.txt` before stdin, and only treats `CrashReporter` / `EXCEPTION` (non-INFO) as a crash.
+
+**3.5.3-local** adds 10 / 5 / 1 minute in-game restart warnings from the GUI auto-restart timer (10-second windows so a skipped tick cannot miss the 5-minute message).
 
 It is not a signed public app. Windows may still warn if the `.exe` is copied from the internet. Building locally is the trust model.
 
@@ -39,7 +41,7 @@ Install [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (3.3.16.x 
 powershell -NoProfile -ExecutionPolicy Bypass -File .\compile.ps1
 ```
 
-That builds `mcbeplay.exe` and `bds.exe` **without UPX**. Upstream no longer ships `icon.ico`, so the default AutoIt icon is used. `bds.exe` stays a GUI-subsystem binary so it remains hidden like the original.
+That builds `mcbeplay.exe` and `bds.exe` **without UPX**, embedding `icon.ico` via Aut2Exe `/icon`. `bds.exe` stays a GUI-subsystem binary so it remains hidden like the original.
 
 ## Deploy
 
