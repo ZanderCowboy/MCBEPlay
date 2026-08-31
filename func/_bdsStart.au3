@@ -1,7 +1,13 @@
+#include-once
+#include <AutoItConstants.au3>
+#ignorefunc _log, _BDSBusy, _BDSRollback, _BDSSave, _BDSResponse, _BDSExit, _serverGetTitle, _BDSProcessOutput
+#forcedef $session_dir, $error_file, $restart_file, $server_file, $window_title, $rollback, $server, $server_dir, $saved_file
+
 Func _BDSStart()
 
    Local $function_name = "Start Server"
    _log($function_name & " Function Started", $function_name, False, True)
+   Local $iPID
 
    ; Get timestamp again for new $bds_file
    Global $timestamp = @YEAR&@MON&@MDAY&@HOUR&@MIN&@SEC ; YYYYMMDDHHMMSS
@@ -36,7 +42,7 @@ Func _BDSStart()
    While 1
 
 	  _log("Attempting Start Process [" & $attempt & "/3]", $function_name, False, True)
-	  Local $result = _BDSStartProcess()
+	  $result = _BDSStartProcess()
 
 	  If $result <> True Then
 		 _log("Start process failed", $function_name, True)
@@ -81,18 +87,22 @@ Func _BDSStartProcess()
 
    ; All we're going to do is start the server and loop a read / write command
    Local $cmd = '"' & $server
+   #forceref $cmd
    ;Global $PID = Run(@ComSpec & " /K " & $server, $server_dir, @SW_SHOW, $STDIN_CHILD + $STDOUT_CHILD) ; Testing
    Global $PID = Run(@ComSpec & " /K " & $server, $server_dir, @SW_HIDE, $STDIN_CHILD + $STDOUT_CHILD) ; Release
    Sleep(1000) ; !!! sleep !! or process is NOT in the list yet !!
 
-   $title = _serverGetTitle($PID)
+   Local $title = _serverGetTitle($PID)
    WinSetTitle($title, "", $window_title)
-   $hWnd = WinGetHandle($window_title)
+   Local $hWnd = WinGetHandle($window_title)
+   #forceref $hWnd
 
    Local $keyword = "Server started."
    Local $keylen = StringLen($keyword)
+   #forceref $keylen
    Local $pos
    Local $response
+   Local $result
    Local $start_timer = TimerInit()
    Local $error_found = False
 
@@ -132,7 +142,7 @@ Func _BDSStartProcess()
    If FileExists($saved_file) Then
 	  FileDelete($saved_file)
    EndIf
-   $oFile = FileOpen($saved_file, 2)
+   Local $oFile = FileOpen($saved_file, 2)
    FileClose($oFile)
 
    Return True

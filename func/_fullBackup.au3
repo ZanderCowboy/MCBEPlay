@@ -1,3 +1,7 @@
+#include-once
+#ignorefunc _log, _BDSBusy, _BDSResponse
+#forcedef $error_file, $world_dir, $level_name, $save_dir, $backedup_file
+
 Func _FullBackup()
 
    Local $function_name = "Full Backup"
@@ -22,9 +26,10 @@ Func _FullBackup()
 	  $error_found = True
    EndIf
 
-   $save_time = TimerDiff($save_timer)
+   Local $save_time = TimerDiff($save_timer)
    $save_time = Floor($save_time/1000)
 
+   Local $result
    If $error_found Then
 	  $result = "Full Save process failed [" & $save_time & " seconds]"
 	  _log("Full Save failed! [" & $save_time & " seconds]", $function_name, True)
@@ -43,7 +48,7 @@ Func _FullBackup()
 	  If FileExists($backedup_file) Then
 		 FileDelete($backedup_file)
 	  EndIf
-	  $oFile = FileOpen($backedup_file, 2)
+	  Local $oFile = FileOpen($backedup_file, 2)
 	  FileClose($oFile)
 
    EndIf

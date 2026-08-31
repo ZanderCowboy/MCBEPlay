@@ -1,3 +1,7 @@
+#include-once
+#ignorefunc _cleanLogs
+#forcedef $log_dir
+
 Func _cleanUp()
 
 

@@ -1,3 +1,8 @@
+#include-once
+#include <Date.au3>
+#ignorefunc _log, _serverGetStartTime, _guiGetLastSaveTime, _guiMinsSince, _guiGetLastBackupTime, _actionBackupServer, _actionSaveServer, _serverSendCommand, _actionRestartServer
+#forcedef $window_title, $server_file, $ls_label, $save_interval, $ns_label, $backup_interval, $lb_label, $nb_label, $members_online, $save_label, $backup_label, $server_status, $server_working, $min_save_time, $chat_triggered, $chat_timer, $lr_label, $auto_restart, $restart_label, $nr_label, $restart_times, $restart_interval
+
 Func _Exit()
 
    If WinExists($window_title) OR ProcessExists($server_file) Then
@@ -27,16 +32,17 @@ Func _autoSave()
 
    GUICtrlSetData($ls_label, "Last Save: " & $last_save)
 
-   $next_save = _DateAdd("n", $save_interval, $last_save)
-   $seconds_to_save = _DateDiff("s", _NowCalc(), $next_save)
+   Local $next_save = _DateAdd("n", $save_interval, $last_save)
+   Local $seconds_to_save = _DateDiff("s", _NowCalc(), $next_save)
 
    GUICtrlSetData($ns_label, "Next Save: " & $next_save)
 
    ; ### :- 6/2/20 New System for Backups
    Local $last_backup = _guiGetLastBackupTime()
    Local $mins_since_backup = _guiMinsSince($last_backup)
-   $next_backup = _DateAdd("n", $backup_interval, $last_backup)
-   $seconds_to_backup = _DateDiff("s", _NowCalc(), $next_backup)
+   #forceref $mins_since_backup
+   Local $next_backup = _DateAdd("n", $backup_interval, $last_backup)
+   Local $seconds_to_backup = _DateDiff("s", _NowCalc(), $next_backup)
    GUICtrlSetData($lb_label, "Last Backup: " & $last_backup)
    GUICtrlSetData($nb_label, "Next Backup: " & $next_backup)
    ; ### -: 6/2/20 New System for Backups
@@ -149,12 +155,13 @@ Func _autoRestart()
    Local $last_start = _serverGetStartTime()
    GUICtrlSetData($lr_label, "Last restart: " & $last_start)
 
+   Local $result
    If $auto_restart == "time" Then
 	  $result = _autoRestartTime($last_start)
    Else
 	  $result = _autoRestartInterval($last_start)
    EndIf
-   $seconds_to_restart = $result
+   Local $seconds_to_restart = $result
    $minutes_to_restart = $seconds_to_restart/60
    $hours_to_restart = $seconds_to_restart/60/60
 
@@ -235,8 +242,10 @@ Func _autoRestart()
 EndFunc
 
 Func _autoRestartTime($last_restart)
+   #forceref $last_restart
 
    Local $seconds_to_restart = 86401 ; 1 second more than 24 hrs
+   Local $restart_date, $seconds, $full_date
 
    For $i = 0 To UBound($restart_times) - 1
 
@@ -246,7 +255,7 @@ Func _autoRestartTime($last_restart)
 	  ; If seconds is negative then time has passed, set date to tomorrow and try
 	  If $seconds < 0 Then
 
-		 Local $full_date = @YEAR & "/" & @MON & "/" & @MDAY & " " & $restart_times[$i] & ":00"
+		 $full_date = @YEAR & "/" & @MON & "/" & @MDAY & " " & $restart_times[$i] & ":00"
 		 $restart_date = _DateAdd("D", 1, $full_date)
 		 $seconds = _DateDiff("s", _NowCalc(), $restart_date)
 
@@ -257,7 +266,7 @@ Func _autoRestartTime($last_restart)
 
    Next
 
-   $next_restart = _DateAdd("s", $seconds_to_restart, _NowCalc())
+   Local $next_restart = _DateAdd("s", $seconds_to_restart, _NowCalc())
    GUICtrlSetData($nr_label, "Next restart: " & $next_restart)
 
    Return $seconds_to_restart
@@ -266,10 +275,10 @@ EndFunc
 
 Func _autoRestartInterval($last_restart)
 
-   $next_restart = _DateAdd("h", $restart_interval, $last_restart)
+   Local $next_restart = _DateAdd("h", $restart_interval, $last_restart)
    GUICtrlSetData($nr_label, "Next restart: " & $next_restart)
 
-   $seconds_to_restart = _DateDiff("s", _NowCalc(), $next_restart)
+   Local $seconds_to_restart = _DateDiff("s", _NowCalc(), $next_restart)
 
    Return $seconds_to_restart
 

@@ -1,3 +1,7 @@
+#include-once
+#ignorefunc _log, _actionStartServer, _actionStopServer, _actionSaveServer, _actionFullBackupServer, _actionRestartServer, _actionRollbackServer, _actionReloadWhitelist, _actionReloadPermissions, _IsChecked, _actionSetData, _actionSendInput
+#forcedef $server_status, $server_working, $options_file, $server_dir, $log_dir, $save_dir, $autoRollback_checkbox, $keepalive_checkbox, $keepalive
+
 ; Start Button
 Func _guiStartButton()
 
@@ -220,6 +224,7 @@ EndFunc
 ; Server Commands
 Func _guiConsoleInput()
 
+   Local $function_name = "Console Input"
    If $server_working = True Then
 	  MsgBox(48, "Alert", " The server is busy")
 	  _log("Action cancelled as server is busy", $function_name, True)
@@ -232,12 +237,14 @@ Func _guiConsoleInput()
    EndIf
 EndFunc
 
+Func _guiConsoleInputButton()
+
+   Local $function_name = "Console Input Button"
    If $server_working = True Then
 	  MsgBox(48, "Alert", " The server is busy")
 	  _log("Action cancelled as server is busy", $function_name, True)
 	  Return False
    EndIf
-Func _guiConsoleInputButton()
    If $server_status = False Then
 	  MsgBox(48, "Alert", "The Server is not running")
    Else

@@ -1,3 +1,10 @@
+#include-once
+#include <GUIConstantsEx.au3>
+#include <ColorConstants.au3>
+#include <StaticConstants.au3>
+#ignorefunc _Exit, _webLink, _youtubeLink, _discordLink
+#forcedef $window_title
+
 ; GUI VARS
 $width = 1060
 $height = 600

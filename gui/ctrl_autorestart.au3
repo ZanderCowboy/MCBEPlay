@@ -1,3 +1,6 @@
+#include-once
+#include <StaticConstants.au3>
+#forcedef $top, $row, $left, $column, $margin, $width, $auto_restart, $restart_interval, $restart_times
 
 $top = $top + $row
 GUICtrlCreateGraphic($left, $top, $column, 1, $SS_GRAYRECT)

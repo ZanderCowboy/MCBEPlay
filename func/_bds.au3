@@ -1,8 +1,15 @@
+#include-once
+#include <File.au3>
+#include <Array.au3>
+#include <Date.au3>
+#ignorefunc _log, _BDSStop, _BDSSave, _BDSRestart, _BDSRollback, _guiMinsSince
+#forcedef $window_title, $server_file, $command_file, $member_file, $working_file, $PID, $bds_file, $session_dir, $member_log, $min_save_time, $log_dir, $error_file, $response_file, $save_dir
+
 Func _BDSExit()
    Local $function_name = "BDS Exit"
    _log("Exit Called", $function_name)
    WinClose($window_title)
-   $iPID = ProcessExists($server_file)		; Just incase process stays open
+   Local $iPID = ProcessExists($server_file)		; Just incase process stays open
    ProcessClose($iPID)
    FileDelete($command_file)
    FileDelete($member_file)
@@ -127,6 +134,7 @@ EndFunc
 
 Func _BDSProcessOutput($quick=False)
    Local $function_name = "Process Output"
+   #forceref $function_name
 
    ; 7/2/20 ### New Server Command System
 	; Local $output = StdoutRead($PID)
@@ -136,7 +144,8 @@ Func _BDSProcessOutput($quick=False)
 	  ; If data more than one line then split lines and parse each
 	  Local $lines = StringSplit($output, @LF, 2)
 	  If Not IsArray($lines) Then
-		 Dim $lines[1] = $output
+		 Local $fallback[1] = [$output]
+		 $lines = $fallback
 	  EndIf
 	  Local $line
 	  For $i = 0 To UBound($lines)-1
@@ -173,9 +182,9 @@ Func _BDSWriteToFile($data)
 	  $bds_part = StringTrimRight($bds_part, 3) ; Remove [1]
 	  Local $files = _FileListToArray($session_dir, $bds_part & "*", $FLTA_FILES)
 	  If IsArray($files) Then
-		 Local $num_files = $files[0]
+		 $num_files = $files[0]
 	  EndIf
-	  Global $bds_file = $session_dir & "\" & $bds_part & "[" & $num_files+1 & "].txt"
+	  $bds_file = $session_dir & "\" & $bds_part & "[" & $num_files+1 & "].txt"
 	  _log("Started Next Log File: " & $bds_file, $function_name)
    EndIf
 EndFunc
@@ -204,7 +213,8 @@ Func _BDSFindMember($data)
 	  Local $members
 	  _FileReadToArray($member_file, $members)
 	  If Not IsArray($members) Then
-		 Dim $members[1]
+		 Local $empty_members[1]
+		 $members = $empty_members
 	  EndIf
 	  ; Is player in array?
 	  Local $search = _ArraySearch($members, $player)
@@ -227,7 +237,7 @@ Func _BDSFindMember($data)
 
 	  $string = _NowCalc() & " : " & $player & " " & $action & " [xuid: " & $xuid & "]" & @CRLF
 	  _log("Adding Member Data to Log: " & $string, $function_name)
-	  Local $oFile = FileOpen($member_log, 1)
+	  $oFile = FileOpen($member_log, 1)
 	  FileWrite($oFile, $string)
 	  FileClose($oFile)
 	  _log($player & " " & $action, $function_name, False, True)
@@ -236,8 +246,8 @@ Func _BDSFindMember($data)
 	  ; If member disconnected then need to trigger save if save hasn't taken place in a while i.e Player logs out before AutoSave and AutoSave Pauses
 	  If $action = "disconnected" AND UBound($members)-1 = 0 Then ; Only trigger if 0 players left in game
 
-		 $last_save_time = _BDSTrueSaveTime()
-		 $mins_since_save = _guiMinsSince($last_save_time)
+		 Local $last_save_time = _BDSTrueSaveTime()
+		 Local $mins_since_save = _guiMinsSince($last_save_time)
 
 		 If $mins_since_save > $min_save_time Then
 
@@ -302,22 +312,22 @@ Func _BDSCrashReport()
 
    ; This doesn't work as the system doesn't seem to get time to run it before it closes
    Local $function_name = "Crash Report"
+   #forceref $function_name
    ; Find start of report
-   Local $pos = 0
    Local $keyword = "Package"
-   Local $keylen = StringLen($keyword)
    Local $data = FileRead($bds_file)
    Local $pos = StringInStr($data, $keyword, 0, -1) - 27
    Local $crash_report = StringMid($data, $pos)
    Local $timestamp = @YEAR&@MON&@MDAY&@HOUR&@MIN&@SEC
    Local $crash_file = $log_dir & "\crash_report-" & $timestamp & ".txt"
-   $oFile = FileOpen($crash_file, 2)
+   Local $oFile = FileOpen($crash_file, 2)
    FileWrite($oFile, $crash_report)
    FileClose($oFile)
 EndFunc
 
 Func _BDSErrorFile($string)
    Local $function_name = "Error File"
+   #forceref $function_name
    Local $oFile = FileOpen($error_file, 2)
    FileWrite($oFile, $string)
    FileClose($oFile)
@@ -343,7 +353,7 @@ Func _BDSBusy($state)
    Switch $state
    Case True
 	  ; Send busy signal
-	  $oFile = FileOpen($working_file, 1)
+	  Local $oFile = FileOpen($working_file, 1)
 	  FileClose($oFile)
    Case False
 	  ; Remove busy signal
@@ -390,7 +400,7 @@ Func _BDSTrueSaveTime()
 		 $latest_save = $save
 	  EndIf
    Next
-   Local $file_time = FileGetTime($latest_save, $FT_CREATED, 0)
+   $file_time = FileGetTime($latest_save, $FT_CREATED, 0)
    Local $save_time = $file_time[0] & "/" & $file_time[1] & "/" & $file_time[2] & " " & $file_time[3] & ":" & $file_time[4] & ":" & $file_time[5]
 
    Return $save_time

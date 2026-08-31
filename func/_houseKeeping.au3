@@ -1,3 +1,10 @@
+#include-once
+#include <File.au3>
+#include <Date.au3>
+#include <Array.au3>
+#ignorefunc _log
+#forcedef $log, $error_log, $member_log, $log_dir, $keep_logs, $session_dir, $keep_daily_saves, $timestamp, $save_dir, $level_name, $keep_saves
+
 Func _houseKeeping()
 
    Local $function_name = "House Keeping"
@@ -31,8 +38,8 @@ Func _purgeFolders($directory, $keep_time)
 	  Local $lDate = FileGetTime($items[$i], $FT_CREATED)
 	  Local $date = $lDate[0]&"/"&$lDate[1]&"/"&$lDate[2]&" "&$lDate[3]&":"&$lDate[4]&":"&$lDate[5]
 	  If _DateDiff("D", $date, _NowCalc()) > $keep_time Then
-		 _log("Removing Folder: " & $items[$l], $function_name, False, True)
-		 DirRemove($items[$l], 1)
+		 _log("Removing Folder: " & $items[$i], $function_name, False, True)
+		 DirRemove($items[$i], 1)
 	  EndIf
    Next
 EndFunc
@@ -91,7 +98,7 @@ Func _dailySaves()
    _log($function_name & " Function Started", $function_name)
 
    ; Get a list of all the actual save folders from the save path ; Ignore failed saves
-   $folders = _FileListToArrayRec($save_dir, "*" & $level_name & "-*|FAILED_", $FLTAR_FOLDERS, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_NOPATH)
+   Local $folders = _FileListToArrayRec($save_dir, "*" & $level_name & "-*|FAILED_", $FLTAR_FOLDERS, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_NOPATH)
    If Not IsArray($folders) Then
 	  Return False
    EndIf
@@ -108,6 +115,8 @@ Func _dailySaves()
 
    Dim $dates[1]
    Dim $occurances[1]
+
+   Local $save, $split, $datetime, $date, $y, $m, $d, $nice_date, $days_old, $key, $saves_in_date
 
    ; For each save, check how many saves (occurances) per day
    For $i = 1 To UBound($saves)-1
@@ -220,7 +229,7 @@ Func _tidySaves()
    _log($function_name & " Function Started", $function_name)
 
     ; Get a list of all the actual save folders from the save path
-   $folders = _FileListToArrayRec($save_dir, "*" & $level_name & "-*|DAILY_*", $FLTAR_FOLDERS, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_NOPATH)
+   Local $folders = _FileListToArrayRec($save_dir, "*" & $level_name & "-*|DAILY_*", $FLTAR_FOLDERS, $FLTAR_NORECUR, $FLTAR_SORT, $FLTAR_NOPATH)
    If Not IsArray($folders) Then
 	  Return False
    EndIf
@@ -232,6 +241,8 @@ Func _tidySaves()
 		 _arrayAdd($saves, $folders[$i])
 	  EndIf
    Next
+
+   Local $save, $split, $datetime, $date, $y, $m, $d, $nice_date, $days_old
 
    ; For each save, check how old it is
    For $i = 1 To UBound($saves)-1

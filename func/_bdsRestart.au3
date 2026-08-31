@@ -1,3 +1,7 @@
+#include-once
+#ignorefunc _log, _BDSStop, _FullBackup, _BDSStart
+#forcedef $restart_file
+
 Func _BDSRestart()
 
    Local $function_name = "Restart Server"
@@ -5,6 +9,7 @@ Func _BDSRestart()
 
    ; Then Stop
    Local $response = _BDSStop(True)
+   #forceref $response
 
    ; ### 6/2/20 ADDED NEW SAVE / BACKUP SYSTEM (BELOW REMOVED)
    ; If keep alive is turned on, it may trigger a restart while the server is making a backup.
@@ -12,7 +17,7 @@ Func _BDSRestart()
 
    ; Create restart file
    _log("Creating Restarting File", $function_name, False, True)
-   $oFile = FileOpen($restart_file, 2)
+   Local $oFile = FileOpen($restart_file, 2)
    FileClose($oFile)
 
    _FullBackup()
@@ -27,5 +32,3 @@ Func _BDSRestart()
    EndIf
 
 EndFunc
-
-

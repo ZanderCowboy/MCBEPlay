@@ -1,3 +1,9 @@
+#include-once
+#include <EditConstants.au3>
+#include <WindowsConstants.au3>
+#ignorefunc _guiConsoleInput, _guiConsoleInputButton
+#forcedef $left, $top, $row, $2column, $console_height, $margin, $column
+
 $console_label = GUICtrlCreateLabel("Console Output:", $left, $top, 100, $row)
 GUICtrlSetFont($console_label, 8.5, 600 ,0)
 

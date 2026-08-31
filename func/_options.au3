@@ -1,8 +1,13 @@
+#include-once
+#include <File.au3>
+#include <AutoItConstants.au3>
+
 ; Get Data From Options File
 Func _optionsGet($file)
 
    Local $options
-   $res = _FileReadToArray($file, $options)
+   Local $res = _FileReadToArray($file, $options)
+   #forceref $res
 
    For $i = 1 to UBound($options) -1
 
@@ -14,7 +19,7 @@ Func _optionsGet($file)
 
 		 ; Strip comments
 		 If StringInStr($val, "#") <> 0 Then
-			$val_split = StringSplit($val, "#")
+			Local $val_split = StringSplit($val, "#")
 			$val = StringStripWS($val_split[1], 2)
 		 EndIf
 

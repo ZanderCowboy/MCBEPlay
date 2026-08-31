@@ -1,3 +1,8 @@
+#include-once
+#include <File.au3>
+#ignorefunc _log, _BDSBusy, _BDSResponse
+#forcedef $world_dir, $level_name, $save_dir
+
 Func _BDSRollback()
 
    Local $function_name = "Rollback Server"
@@ -5,11 +10,11 @@ Func _BDSRollback()
 
    _BDSBusy(True)
 
-   $src_path = $world_dir & "\" & $level_name
+   Local $src_path = $world_dir & "\" & $level_name
    Local $db_path = $src_path & "\db"
    Local $modified = FileGetTime($db_path, $FT_MODIFIED, $FT_STRING)
 
-   $dst_path = $save_dir & "\FAILED_" & $level_name & "-" & $modified
+   Local $dst_path = $save_dir & "\FAILED_" & $level_name & "-" & $modified
 
    ; Copy World Folder to Failed Saves Folder
    Local $copied = DirCopy($src_path, $dst_path, 1)
@@ -64,7 +69,7 @@ Func _BDSRollback()
 
    ; 4. If > 1 then copy latest save to world folder
    ; First remove all db files - deleted dir - world_path\level_name\db
-   $purge_path = $world_dir & "\" & $level_name & "\db"
+   Local $purge_path = $world_dir & "\" & $level_name & "\db"
    _log("Purging Existing DB files from World Folder", $function_name, False)
 
    ; Check db folder exists to purge
@@ -83,8 +88,8 @@ Func _BDSRollback()
 
    _log("Copying Save Data to World File", $function_name, False)
 
-   Local $src_path = $save_dir & "\" & $save_file
-   Local $dst_path = $world_dir & "\" & $level_name
+   $src_path = $save_dir & "\" & $save_file
+   $dst_path = $world_dir & "\" & $level_name
 
    Local $copy = DirCopy($src_path, $dst_path, $FC_OVERWRITE)
    If $copy == 0 Then
@@ -100,7 +105,7 @@ Func _BDSRollback()
    ; 5. Move copied Rollback folder to saves/title/ROLLBACK_level-timestamp so we don't use this one again
    _log("Renaming bolled back save folder to add ROLLBACK_ prefix", $function_name, False)
    $dst_path = $save_dir & "\ROLLBACK_" & $save_file
-   $move = DirMove($src_path, $dst_path, $FC_OVERWRITE)
+   Local $move = DirMove($src_path, $dst_path, $FC_OVERWRITE)
 
    If $move == 0 Then
 	  _log("Error renaming failed save", $function_name, True)

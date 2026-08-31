@@ -1,3 +1,9 @@
+#include-once
+#include <Array.au3>
+#include <StringConstants.au3>
+#ignorefunc _optionsGet
+#forcedef $options_file, $restart_times, $server_title, $MCBEPlay, $server_dir, $server_file, $log_dir, $save_dir, $verbose_logging
+
 ; Get Options from Options File
 _optionsGet($options_file)
 

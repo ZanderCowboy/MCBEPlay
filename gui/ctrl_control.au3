@@ -1,3 +1,10 @@
+#include-once
+#include <StaticConstants.au3>
+#include <ColorConstants.au3>
+#include <GUIConstantsEx.au3>
+#ignorefunc _guiStartButton, _guiStopButton, _guiRestartButton, _guiSaveButton, _guiRollbackButton, _guiOpenFolder, _guiOpenOptions, _guiOpenProperties, _guiReloadWhitelistButton, _guiReloadPermissionsButton, _guiOpenLogs, _guiOpenSaves, _guiRollbackCheckbox, _guiKeepaliveCheckbox
+#forcedef $margin, $2column, $row, $column, $rollback, $keepalive
+
 $top = $margin
 $left = $2column + ($margin * 2)
 

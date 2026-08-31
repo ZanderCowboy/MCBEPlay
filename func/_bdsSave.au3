@@ -1,15 +1,21 @@
+#include-once
+#ignorefunc _log, _BDSBusy, _BDSProcessOutput, _BDSStdIn, _BDSBackup, _BDSServerChat
+#forcedef $PID, $saved_file
+
 Func _BDSSave($auto_backup=False)
 
    Local $function_name = "Save Server"
    _log($function_name & " Function Started", $function_name, False, True)
    _BDSBusy(True)
-   $input = StdinWrite($PID, "save hold" & @LF)
+   Local $input = StdinWrite($PID, "save hold" & @LF)
+   #forceref $input
    Sleep(500)
    _BDSProcessOutput(True)
    _BDSStdIn("save query" & @LF)
    Sleep(500)
    Local $try = 1
    Local $success = False
+   Local $response
    While 1
 	  $response = _BDSProcessOutput(True)
 	  If StringInStr($response, "level.dat", 0) > 0 Then
@@ -49,7 +55,7 @@ Func _BDSSave($auto_backup=False)
 	  FileDelete($saved_file)
    EndIf
    _log("Creating Saved File", $function_name, False, True)
-   $oFile = FileOpen($saved_file, 2)
+   Local $oFile = FileOpen($saved_file, 2)
    FileClose($oFile)
 
    _BDSBusy(False)

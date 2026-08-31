@@ -1,4 +1,6 @@
 ; Use AdlibRegister for AutoSave / AutoRestart
+#ignorefunc _guiUpdateServerStatus, _guiUpdateWorkingStatus, _guiUpdateConsole, _serverGetConsoleLog, _autoSave, _autoRestart, _runScript, _log, _actionKeepAlive, _houseKeeping, _serverCheckOnline, _serverCheckError, _serverCheckWorking, _serverResponseFileCheck, _serverBackupFileCheck, _serverRestartFileCheck, _serverSaveFileCheck, _guiUpdateMembers
+#forcedef $aTimer, $bTimer, $cTimer, $server_status, $auto_save, $server_error
 
 If TimerDiff($aTimer) > 1000 Then 		; Do something every 1 second
 

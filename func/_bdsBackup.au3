@@ -1,3 +1,10 @@
+#include-once
+#include <Array.au3>
+#include <WinAPIFiles.au3>
+#include <WinAPIHObj.au3>
+#ignorefunc _log, _BDSBusy, _BDSServerChat, _BDSResponse
+#forcedef $error_file, $world_dir, $level_name, $save_dir, $backedup_file
+
 ; Added 6/2/20
 ; Makes a backup of the server during save ProcessClose
 
@@ -18,9 +25,7 @@ Func _BDSBackup($response)
 
    ;    Find data based on keyword search
    Local $keyword = "level.dat"
-   Local $keylen = StringLen($keyword)
    Local $pos
-   Local $result
    Local $error_found = False
    Local $save_data
 
@@ -38,7 +43,7 @@ Func _BDSBackup($response)
    _log("Creating Array of Files to Save", $function_name)
    Local $save_files = StringSplit($save_data, ",")
 
-   $timestamp = @YEAR&@MON&@MDAY&@HOUR&@MIN&@SEC
+   Local $timestamp = @YEAR&@MON&@MDAY&@HOUR&@MIN&@SEC
 
    Local $src_dir = $world_dir & "\" & $level_name & "\"
    Local $dst_file = $level_name & "-" & $timestamp & "\"
@@ -46,38 +51,36 @@ Func _BDSBackup($response)
 
    ; Get an array of all files to save
    ; Get 2nd array containing file lengths required
-   Dim $file_list[1]
-   Dim $file_lengths[1]
+   Local $file_list[1]
+   Local $file_lengths[1]
    If($save_files[0] > 0) Then ; Zero point on array is array length
 
 	  For $i = 1 To UBound($save_files)-1
-
-	  Local $data = $save_files[$i]
 
 		 If StringInStr($save_files[$i], ":") Then
 
 			Local $file_split = StringSplit($save_files[$i], ":")
 			Local $file = $file_split[1]
 			Local $file_size = $file_split[2]
-			_arrayAdd($file_lengths, $file_size)
+			_ArrayAdd($file_lengths, $file_size)
 
 			Local $strip_slash = StringSplit($file, "/")
-			Local $file = $strip_slash[2]
-			_arrayAdd($file_list, $file)
+			$file = $strip_slash[2]
+			_ArrayAdd($file_list, $file)
 		 EndIf
 
 	   Next
 	EndIf
 
    ; Once we have all of the files and lengths we need to copy them to the destination directory
-   Dim $dst_files[1]
-   Dim $req_lengths[1]
+   Local $dst_files[1]
+   Local $req_lengths[1]
 
    _log("Copying Files", $function_name, False, True)
 
    For $i = 1 To UBound($file_list)-1
 
-	  Local $file = $file_list[$i]
+	  $file = $file_list[$i]
 
 	  Local $src_path = $src_dir & $file
 	  Local $dst_path = $dst_dir & $file
@@ -100,8 +103,8 @@ Func _BDSBackup($response)
 
 	  If $file_exists Then
 
-		 _arrayAdd($dst_files, $dst_path)
-		 _arrayAdd($req_lengths, $file_lengths[$i])
+		 _ArrayAdd($dst_files, $dst_path)
+		 _ArrayAdd($req_lengths, $file_lengths[$i])
 		 ; Copy File from World Folder to Save Location
 		 ;_log("Copying File: " & $file, $function_name)
 		 If FileCopy($src_path, $dst_path, 8) < 1 Then
@@ -123,17 +126,16 @@ Func _BDSBackup($response)
    _log("Truncating Copied Files", $function_name, False, True)
    For $i = 1 To UBound($dst_files)-1
 
-	  Local $file = $dst_files[$i]
+	  $file = $dst_files[$i]
 	  Local $req_size = $req_lengths[$i]
 	  Local $dst_size = FileGetSize($dst_files[$i])
 
 	  If $dst_size > $req_size Then
 
 		 ; Truncate file to set file length
-		 $hFile = _WinAPI_CreateFile($file, 2, 4)
+		 Local $hFile = _WinAPI_CreateFile($file, 2, 4)
 		 _WinAPI_SetFilePointer($hFile, $req_size)
 		 _WinAPI_SetEndOfFile($hFile)
-		 $iSize = _WinAPI_GetFileSizeEx($hFile)
 		 _WinAPI_CloseHandle($hFile)
 
 		 Local $dFileSize = FileGetSize($file)
@@ -150,7 +152,7 @@ Func _BDSBackup($response)
 
    Next
 
-   $backup_time = TimerDiff($backup_timer)
+   Local $backup_time = TimerDiff($backup_timer)
    $backup_time = Floor($backup_time/1000)
 
    If $error_found Then
@@ -158,7 +160,7 @@ Func _BDSBackup($response)
 	  _log($result, $function_name, True)
 
 	  _log("Renaming Backup with FAILED_ prefix", $function_name, False, True)
-	  $fail_dir = $save_dir & "\FAILED_" & $dst_file
+	  Local $fail_dir = $save_dir & "\FAILED_" & $dst_file
 	  If DirMove($dst_dir , $fail_dir) < 1 Then
 		 _log("Error renaming failed backup: " & $dst_dir & " > " & $fail_dir, $function_name, True)
 	  EndIf
@@ -180,7 +182,7 @@ Func _BDSBackup($response)
    If FileExists($backedup_file) Then
 	  FileDelete($backedup_file)
    EndIf
-   $oFile = FileOpen($backedup_file, 2)
+   Local $oFile = FileOpen($backedup_file, 2)
    FileClose($oFile)
 
    _BDSResponse($result)

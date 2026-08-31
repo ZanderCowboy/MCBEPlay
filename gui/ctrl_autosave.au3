@@ -1,3 +1,7 @@
+#include-once
+#include <StaticConstants.au3>
+#forcedef $top, $margin, $left, $column, $row, $width, $backup_interval
+
 $top = $top + $margin
 $autosave_label = GUICtrlCreateLabel("Auto Save System: ", $left, $top, $column/2, $row)
 GUICtrlSetFont($autosave_label, 8.5, 600 ,0)

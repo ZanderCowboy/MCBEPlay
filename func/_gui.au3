@@ -1,3 +1,12 @@
+#include-once
+#include <ColorConstants.au3>
+#include <GUIEdit.au3>
+#include <ScrollBarConstants.au3>
+#include <File.au3>
+#include <Date.au3>
+#ignorefunc _log, _serverGetConsoleLog
+#forcedef $server_error, $server_status, $state_label2, $server_working, $state_label3, $debug_edit, $max_debug_lines, $console_edit, $max_console_lines, $console_log, $console_size, $save_file, $backup_file, $save_dir, $level_name, $member_file, $members_label, $members_online, $members_online_last
+
 Func _guiUpdateServerStatus()
 
    Local $function_name = "Update Server Status"
@@ -117,7 +126,7 @@ Func _guiSetLastSaveTime($datetime)
    _log($function_name & " Function Started", $function_name)
 
    _log("Setting Last Save Time to: " & $datetime, $function_name, False, True)
-   $oFile = FileOpen($save_file, 2)
+   Local $oFile = FileOpen($save_file, 2)
    FileWrite($oFile, $datetime)
    FileClose($oFile)
 
@@ -128,7 +137,7 @@ Func _guiGetLastSaveTime()
    Local $function_name = "Get Last Save Time"
    _log($function_name & " Function Started", $function_name)
 
-   $oFile = FileOpen($save_file)
+   Local $oFile = FileOpen($save_file)
    Local $save_time = FileRead($oFile)
    FileClose($oFile)
 
@@ -143,7 +152,7 @@ Func _guiSetLastBackupTime($datetime)
    _log($function_name & " Function Started", $function_name)
 
    _log("Setting Last Backup Time to: " & $datetime, $function_name, False, True)
-   $oFile = FileOpen($backup_file, 2)
+   Local $oFile = FileOpen($backup_file, 2)
    FileWrite($oFile, $datetime)
    FileClose($oFile)
 
@@ -164,8 +173,8 @@ Func _guiGetLastBackupTime()
    ; If backup time file doesn't exist then search for backup folders (Don't do this every time as it will be laggy)
    If FileExists($backup_file) Then
 
-	  $oFile = FileOpen($backup_file)
-	  Local $backup_time = FileRead($oFile)
+	  Local $oFile = FileOpen($backup_file)
+	  $backup_time = FileRead($oFile)
 	  FileClose($oFile)
 
    Else
@@ -193,8 +202,8 @@ Func _guiGetLastBackupTime()
 			EndIf
 		 Next
 
-		 $good_date = FileGetTime($latest_save, $FT_CREATED, 0)
-		 Local $backup_time = $good_date[0] & "/" & $good_date[1] & "/" & $good_date[2] & " " & $good_date[3] & ":" & $good_date[4] & ":" & $good_date[5]
+		 Local $good_date = FileGetTime($latest_save, $FT_CREATED, 0)
+		 $backup_time = $good_date[0] & "/" & $good_date[1] & "/" & $good_date[2] & " " & $good_date[3] & ":" & $good_date[4] & ":" & $good_date[5]
 
 		 ; Save this to a file so that we don't need to keep running folder searches 4 times / second
 		 _guiSetLastBackupTime($backup_time)
@@ -224,7 +233,7 @@ Func _guiUpdateMembers()
    EndIf
    $members_online = UBound($members)-1
    If $members_online > 0 Then
-	  $member_string = ""
+	  Local $member_string = ""
 	  For $i = 1 To $members_online
 		 If StringLen($members[$i]) > 0 Then
 			$member_string &= $members[$i] & ", "

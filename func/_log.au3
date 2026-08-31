@@ -1,3 +1,9 @@
+#include-once
+#include <File.au3>
+#include <Date.au3>
+#ignorefunc _guiWriteToDebug
+#forcedef $server_title, $verbose_logging, $log, $gui, $error_log
+
 Func _log($string, $function_name, $error=False, $important=False)
 
    If Not IsDeclared("script_name") Then

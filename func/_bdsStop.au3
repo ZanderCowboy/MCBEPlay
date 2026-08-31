@@ -1,3 +1,7 @@
+#include-once
+#ignorefunc _log, _BDSBusy, _BDSServerChat, _BDSSave, _BDSStdIn, _BDSProcessOutput, _BDSResponse, _FullBackup, _BDSExit
+#forcedef $window_title, $server_file, $command_file, $member_file, $working_file
+
 Func _BDSStop($restart=False)
 
    Local $function_name = "Stop Server"
@@ -31,6 +35,7 @@ Func _BDSStop($restart=False)
    Local $result
    Local $keyword = "Quit correctly"
    Local $keylen = StringLen($keyword)
+   #forceref $keylen
    Local $pos
    Local $response
    Local $stop_timer = TimerInit()
@@ -66,7 +71,7 @@ Func _BDSStop($restart=False)
    WEnd
 
    WinClose($window_title)
-   $iPID = ProcessExists($server_file)		; Just incase process stays open
+   Local $iPID = ProcessExists($server_file)		; Just incase process stays open
    ProcessClose($iPID)
    FileDelete($command_file)
    FileDelete($member_file)

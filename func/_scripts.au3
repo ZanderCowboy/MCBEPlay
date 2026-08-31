@@ -1,3 +1,6 @@
+#include-once
+#forcedef $debug_mode
+
 Func _runScript($script)
 
    If $debug_mode = False AND FileExists($script & ".exe") Then

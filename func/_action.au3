@@ -1,3 +1,9 @@
+#include-once
+#include <Date.au3>
+#include <File.au3>
+#ignorefunc _log, _runScript, _serverSendCommand, _guiGetLastBackupTime, _guiMinsSince, _BDSRollback
+#forcedef $server_working, $backup_interval, $console_input, $options_file, $keepalive_triggered, $keepalive_timer, $keepalive, $server_stopped, $server_status
+
 ; 6/2/20 New Save / Restart System
 Func _actionStartServer()
 
@@ -33,6 +39,7 @@ Func _actionStopServer()
 EndFunc
 
 Func _actionSaveServer($force = True)
+   #forceref $force
 
    Local $function_name = "Save Server Action"
    _log($function_name & " Function Started", $function_name)
@@ -48,8 +55,9 @@ Func _actionSaveServer($force = True)
    ; ### :- 6/2/20 New System for Backups
    Local $last_backup = _guiGetLastBackupTime()
    Local $mins_since_backup = _guiMinsSince($last_backup)
-   $next_backup = _DateAdd("n", $backup_interval, $last_backup)
-   $seconds_to_backup = _DateDiff("s", _NowCalc(), $next_backup)
+   #forceref $mins_since_backup
+   Local $next_backup = _DateAdd("n", $backup_interval, $last_backup)
+   Local $seconds_to_backup = _DateDiff("s", _NowCalc(), $next_backup)
    If $seconds_to_backup <= 0 Then
 	  _log("Running Save with Backup", $function_name, False, True)
 	  _serverSendCommand("backup")
@@ -64,6 +72,7 @@ Func _actionSaveServer($force = True)
 EndFunc
 
 Func _actionBackupServer($force = True)
+   #forceref $force
 
    Local $function_name = "Backup Server Action"
    _log($function_name & " Function Started", $function_name)
@@ -144,7 +153,8 @@ Func _actionSendInput()
    Local $command = GUICTRLRead($console_input)
    GUICtrlSetData($console_input, "")
    If StringLeft($command, 1) = "/" Then
-	  $msg = StringRight($command, StringLen($command)-1)
+	  Local $msg = StringRight($command, StringLen($command)-1)
+	  #forceref $msg
    EndIf
 
    _serverSendCommand($command)
@@ -161,15 +171,16 @@ Func _actionSetData($key, $val)
    Local $lines = ""
 
    For $i = 1 to UBound($options) -1
-	  $line = $options[$i]
+	  Local $line = $options[$i]
 	  If StringLeft($line, StringLen($key)) = $key Then
 		 $line = $key & "=" & $val
 	  EndIf
 	  $lines &= $line & @CRLF
    Next
 
-   $oFile = FileOpen($options_file, 2)
-   $oWrite = FileWrite($oFile, $lines)
+   Local $oFile = FileOpen($options_file, 2)
+   Local $oWrite = FileWrite($oFile, $lines)
+   #forceref $oWrite
    FileClose($oFile)
 EndFunc
 

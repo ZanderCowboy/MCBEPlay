@@ -1,3 +1,8 @@
+#include-once
+#include <File.au3>
+#ignorefunc _log, _guiSetLastBackupTime, _guiSetLastSaveTime
+#forcedef $window_title, $error_file, $working_file, $session_dir, $response_file, $backedup_file, $restart_file, $saved_file, $command_file
+
 Func _serverCheckOnline()
 
    Local $function_name = "Server Check Status"
@@ -185,7 +190,7 @@ EndFunc
 
 Func _serverSendCommand($command)
 
-   $oFile = FileOpen($command_file, 2)
+   Local $oFile = FileOpen($command_file, 2)
    FileWrite($oFile, $command)
    FileClose($oFile)
 
