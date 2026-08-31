@@ -2,7 +2,7 @@
 
  AutoIt Version: 3.3.14.5
  Author:         FoxyNotail
- Version:Local	 3.5.3-local
+ Version:Local	 3.5.4-local
  Date: 			 14/4/02
 
  Script Function:

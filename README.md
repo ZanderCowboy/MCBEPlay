@@ -2,7 +2,7 @@
 
 Server GUI and management for Minecraft Bedrock Dedicated Server on Windows.
 
-This is a **local fork** of [foxynotail/MCBEPlay](https://github.com/foxynotail/MCBEPlay) (v3.5, GPL-3.0), not an official release. Credit: [FoxyNoTail](https://foxynotail.com). Version: **3.5.3-local**.
+This is a **local fork** of [foxynotail/MCBEPlay](https://github.com/foxynotail/MCBEPlay) (v3.5, GPL-3.0), not an official release. Credit: [FoxyNoTail](https://foxynotail.com). Version: **3.5.4-local**.
 
 Stock 3.5 is incompatible with Bedrock Dedicated Server 1.26+:
 
@@ -13,6 +13,8 @@ Stock 3.5 is incompatible with Bedrock Dedicated Server 1.26+:
 This fork only treats a BDS log level of `ERROR` as fatal (and ignores `Unknown command:`), trims `command.txt` before stdin, and only treats `CrashReporter` / `EXCEPTION` (non-INFO) as a crash.
 
 **3.5.3-local** adds 10 / 5 / 1 minute in-game restart warnings from the GUI auto-restart timer (10-second windows so a skipped tick cannot miss the 5-minute message).
+
+**3.5.4-local** waits up to 5 minutes for `Server started.` (including `Waiting for Minecraft services...`) and actually retries failed starts instead of logging success and exiting.
 
 It is not a signed public app. Windows may still warn if the `.exe` is copied from the internet. Building locally is the trust model.
 
