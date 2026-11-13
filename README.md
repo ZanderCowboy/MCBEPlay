@@ -4,7 +4,7 @@ Server GUI and process wrapper for Minecraft Bedrock Dedicated Server on Windows
 
 This is a **local fork** of [foxynotail/MCBEPlay](https://github.com/foxynotail/MCBEPlay) (v3.5, GPL-3.0), not an official release. Credit: [FoxyNoTail](https://foxynotail.com). License: [GPL-3.0](LICENSE). Version: **3.5.4-local**. Repo: [ZanderCowboy/MCBEPlay](https://github.com/ZanderCowboy/MCBEPlay).
 
-It is not a signed public app. Windows may warn if a `.exe` is copied from the internet. Building locally with Aut2Exe is the trust model.
+It is not a signed public app. Windows may warn on the committed `.exe` files (SmartScreen / “unknown publisher”). That is expected. Rebuild with `compile.ps1` if you want binaries produced on that PC.
 
 This repo is **only** the AutoIt GUI (`mcbeplay`) and the hidden BDS helper (`bds`). It does not include Bedrock Dedicated Server, Discord bots, or scheduled tasks. Those live elsewhere (on this machine: `C:\MinecraftServer`).
 
@@ -46,7 +46,9 @@ mcbeplay.exe  --launches-->  bds.exe  --launches-->  bedrock_server.exe
 ```
 mcbeplay.au3      GUI entry point
 bds.au3           Hidden BDS helper entry point
-compile.ps1       Aut2Exe build (no UPX, embeds icon.ico)
+mcbeplay.exe      Prebuilt GUI (clone-and-run)
+bds.exe           Prebuilt helper (clone-and-run)
+compile.ps1       Aut2Exe rebuild (no UPX, embeds icon.ico)
 icon.ico
 options.txt       Template only — placeholder paths, not a live install
 inc\              Shared includes, globals, options parser, timers
@@ -55,16 +57,17 @@ gui\              Window, buttons, console, auto-restart UI
 LICENSE           GPL-3.0
 ```
 
-`.gitignore` excludes `*.exe`, `tmp\`, `logs\`, `saves\`, and `BDS\`. Compiled binaries are local build artifacts; do not commit them.
+`.gitignore` excludes other `*.exe` files, `tmp\`, `logs\`, `saves\`, and `BDS\`. `mcbeplay.exe` and `bds.exe` are tracked so a clone can run without AutoIt.
 
 ## Set up on a new PC
 
+Clone, copy the two committed `.exe` files plus a live `options.txt`, point that at BDS, run. AutoIt is only needed if you will change source.
+
 ### 1. Prerequisites
 
-- Windows (AutoIt is Windows-only).
-- [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) **3.3.16.x or newer** (this fork is built with **3.3.18.0**). The installer includes Aut2Exe, Au3Check, and SciTE. Default path: `C:\Program Files (x86)\AutoIt3\`.
-- PowerShell (for `compile.ps1`).
+- Windows.
 - A Bedrock Dedicated Server folder from Mojang (separate download). This repo does not vendor BDS.
+- [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) **3.3.16.x or newer** only if you will rebuild (this fork is built with **3.3.18.0**). The installer includes Aut2Exe, Au3Check, and SciTE. Default path: `C:\Program Files (x86)\AutoIt3\`.
 
 ### 2. Clone
 
@@ -94,17 +97,9 @@ Leave `auto_save=false` and `rollback=false` until [BDS-2733](https://bugs.mojan
 
 The `options.txt` in git is a **template** with placeholder paths (`C:\MCBEPlay\BDS`, …). It is not the live config on this machine.
 
-### 4. Compile
+### 4. Copy the prebuilt binaries
 
-From the clone:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\compile.ps1
-```
-
-That builds `mcbeplay.exe` and `bds.exe` **without UPX**, embedding `icon.ico` via Aut2Exe `/icon`. `bds.exe` stays a GUI-subsystem binary so it remains hidden like the original. `compile.ps1` looks for Aut2Exe in `Program Files (x86)` then `Program Files`.
-
-Copy **only** those two `.exe` files into the live folder. Do not overwrite live `options.txt`, `logs`, or `saves`.
+From the clone, copy **only** `mcbeplay.exe` and `bds.exe` into the live folder. Do not overwrite live `options.txt`, `logs`, or `saves`.
 
 ### 5. Run
 
@@ -142,17 +137,28 @@ Both should exit 0. Sources are kept Au3Check-clean (`#ignorefunc` / `#forcedef`
 
 Working directory must be the folder that contains `mcbeplay.au3`, `bds.au3`, and `options.txt`. Set `$debug_mode` back to `False` before compiling a release.
 
+### Rebuild
+
+From the clone, with AutoIt installed:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\compile.ps1
+```
+
+That rebuilds `mcbeplay.exe` and `bds.exe` **without UPX**, embedding `icon.ico` via Aut2Exe `/icon`. `bds.exe` stays a GUI-subsystem binary so it remains hidden like the original. `compile.ps1` looks for Aut2Exe in `Program Files (x86)` then `Program Files`.
+
 ### After a source change
 
 1. Au3Check both entry points.
 2. `compile.ps1`
-3. Stop the live stack, copy the two new `.exe` files, start again.
+3. Commit the new `mcbeplay.exe` and `bds.exe` with the source change so clones stay runnable.
+4. Stop the live stack, copy the two new `.exe` files, start again.
 
-Compiled `.exe` files in the clone are gitignored. Live binaries only update when you copy them.
+Live binaries only update when you copy them.
 
 ### Version bump
 
-Keep these four in sync:
+Keep these in sync, then rebuild and commit the two `.exe` files:
 
 - `mcbeplay.au3` header (`Version:Local`)
 - `bds.au3` header (`Version:Local`)

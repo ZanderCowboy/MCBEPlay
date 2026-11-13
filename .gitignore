@@ -1,4 +1,6 @@
 *.exe
+!mcbeplay.exe
+!bds.exe
 *.bak*
 tmp/
 logs/
