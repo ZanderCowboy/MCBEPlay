@@ -1,5 +1,5 @@
 ; Global Variables
-Global $MCBEPlay = "MCBEPlay v3.5.3-local"
+Global $MCBEPlay = "MCBEPlay v3.5.4-local"
 Global $options_file = @ScriptDir & "\options.txt"	; Define Name of Options File
 
 ; Icon File (SciTE AutoIt3Wrapper only; compile.ps1 passes /icon to Aut2Exe)
